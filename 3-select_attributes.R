@@ -10,17 +10,17 @@ library(ROCR)
 library(ggplot2)
 
 rm(list = ls())
-load("Experimento6.RData")
+load("Experimento4.RData")
 filename <- "ElsaCore_CTF_Filtered_Over.RData"
 
-new_df <- ovun.sample(atts_f, data = training, method = "over", seed = 123)$data
-df <- new_df
+#new_df <- ovun.sample(atts_f, data = training, method = "under", seed = 123)$data
+#df <- new_df
 
 #https://jtr13.github.io/cc21fall2/feature-selection-in-r.html
 #results[[4]] -> glmboost
 
 # calculate feature importance without models
-roc_imp <- filterVarImp(x = df[, 1:441], y = df[, 442])
+roc_imp <- filterVarImp(x = df[, 1:442], y = df[, 443])
 roc_imp_df <- data.frame(cbind(variable = rownames(roc_imp), score = roc_imp[,1]))
 names(roc_imp_df)[1] <- "var"
 roc_imp_df$score <- as.double(roc_imp_df$score)

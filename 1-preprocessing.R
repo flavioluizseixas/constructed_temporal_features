@@ -1,5 +1,4 @@
-#setwd("~/Google Drive/Meu Drive/Projetos/2022 - PosDoc/ELSA datasets and description files/R/fev-2023")
-setwd("G:/Meu Drive/Projetos/2022 - PosDoc/ELSA datasets and description files/R/constructed_temporal_features/git")
+setwd("G:/Meu Drive/Projetos/2022 - PosDoc/ELSA datasets and description files/R/constructed_temporal_features")
 
 library(foreign)
 library(dplyr)
@@ -7,7 +6,7 @@ library(readxl)
 library(openxlsx)
 
 rm(list = ls())
-source('preprocessing-functions.R')
+source('0-preprocessing-functions.R')
 
 ###############################################################################
 add_longitudinal_columns_1 <- function(my_env, f_params, att_name, f_op_name) {
@@ -78,8 +77,8 @@ rename_names <- function(my_env) {
 
 ###############################################################################
 
-data_core  <- read.arff("../../../ElsacoreDD.arff")
-data_nurse <- read.arff("../../../ElsanurseDD.arff")
+data_core  <- read.arff("../../ElsacoreDD.arff")
+data_nurse <- read.arff("../../ElsanurseDD.arff")
 
 my_env <- new.env()
 my_env$df <- data_core
@@ -94,7 +93,12 @@ for(i in 1:nrow(my_env$attnames)) {
   attname_w <- grep("X", my_env$attnames[i, 3:ncol(my_env$attnames)])
   for (j in attname_w) {
     print(attname[[1]])
-    ix <- grep(paste0(my_env$attnames[i,2], "_", colnames(my_env$attnames)[j+2]), colnames(my_env$df))
+    if (colnames(my_env$attnames)[j+2] == "NA") {
+      ix <- grep(my_env$attnames[i,2], colnames(my_env$df))
+    }
+    else {
+      ix <- grep(paste0(my_env$attnames[i,2], "_", colnames(my_env$attnames)[j+2]), colnames(my_env$df))
+    }
     if(is.factor(my_env$df[[ix]])) {
       my_env$df[ix] <- as.numeric(as.character(my_env$df[[ix]]))
     }
@@ -131,7 +135,7 @@ print(dim(my_env$df))
 ###############################################################################
 f_params <- read_excel(filename_params, sheet = "f_agebased_percentile")
 for(i in my_env$attnames[[2]]) {
-  
+
   add_longitudinal_columns_1(my_env, f_params,
                              i, f_agebased_percentile)
   l <- ncol(my_env$df)
@@ -144,13 +148,18 @@ for(i in 1:nrow(my_env$attnames)) {
   for (j in 3:ncol(my_env$attnames)) {
     if(!is.na(my_env$attnames[i,j])) {
       if(my_env$attnames[i,j] == "X") {
-        atts <- append(atts, paste0(attname, "_", colnames(my_env$attnames)[j]))
+        if (colnames(my_env$attnames)[j] == "NA") {
+          atts <- append(atts, paste0(attname)[1])
+        }
+        else {
+          atts <- append(atts, paste0(attname, "_", colnames(my_env$attnames)[j]))
+        }
       }
     }
   }
 }
 
-#inclui os campos com os calculos longitudinais 
+#inclui os campos com os calculos longitudinais
 for (i in grep("^f_", names(my_env$df))) {
   atts <- c(atts, names(my_env$df)[i])
 }
@@ -164,4 +173,4 @@ atts <- paste0(class_name, " ~ ", atts)
 atts_f <- as.formula(atts)
 df <- my_env$df
 
-save(df, atts_f, class_name, file="my_data_CTS.R")
+save(df, atts_f, class_name, file="ElsaCore_CTF.RData")

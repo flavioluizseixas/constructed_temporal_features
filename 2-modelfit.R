@@ -11,8 +11,8 @@ library(ggplot2)
 rm(list = ls())
 
 # quando for my_data_CTS_filtered, as bases de treinamento e de teste já veem definidas
-filename_dataset  <- "ElsaCore_CTF_Filtered_Over.RData"
-filename_savedata <- "Experimento5.RData"
+filename_dataset  <- "ElsaCore_CTF.RData"
+filename_savedata <- "Experimento4.RData"
 
 load(filename_dataset)
 
@@ -21,14 +21,14 @@ measure <- function(data, lev = NULL, model = NULL) {
   predictions <- data[, "pred"]
   labels <- data[, "obs"]
   conf_matrix <- table(predictions, labels)
-  
+
   accuracy <- (conf_matrix[1, 1] + conf_matrix[2, 2]) / sum(conf_matrix)
   precision <- conf_matrix[2, 2] / sum(conf_matrix[, 2])
   recall <- conf_matrix[2, 2] / sum(conf_matrix[2, ])
   sensitivity <-  recall
   specificity <- conf_matrix[1,1] / (conf_matrix[1,1] + conf_matrix[2,1])
   f1_score <- 2 * (precision * recall) / (precision + recall)
-  
+
   c(accuracy = accuracy, precision = precision, recall = recall, specificity = specificity, f1_score = f1_score)
 }
 

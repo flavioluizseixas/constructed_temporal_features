@@ -1,4 +1,4 @@
-setwd("G:/Meu Drive/Projetos/2022 - PosDoc/ELSA datasets and description files/R/constructed_temporal_features/git")
+#setwd("G:/Meu Drive/Projetos/2022 - PosDoc/ELSA datasets and description files/R/constructed_temporal_features/git")
 
 library(tidyr)
 library(ggplot2)
@@ -11,14 +11,14 @@ f1_df   <- data.frame()
 spec_df <- data.frame()
 auc_df  <- data.frame()
 
-cmp = c(2,5,6)
-filename_ext = "2-5-6.png"
+cmp = c(1,2)
+filename_ext = "1-2.png"
 
 transformar <- function(a) {
   df_long <- pivot_longer(a, cols = head(names(a), n=length(a)-1),
-                          names_to = "coluna", values_to = "valor", 
+                          names_to = "coluna", values_to = "valor",
                           names_pattern = "coluna(.+)")
-  df_long$coluna = rep(head(names(a), n=length(a)-1), times = 3)
+  df_long$coluna = rep(head(names(a), n=length(a)-1), times = 2)
   return(df_long)
 }
 
@@ -47,7 +47,7 @@ ggplot(transformar(acc_df), aes(x = coluna, y = valor, fill = Experimento)) +
   ggtitle("Accuracy") +
   guides(fill = FALSE)
 ggsave(paste0("acc_", filename_ext))
-  
+
 ggplot(transformar(prec_df), aes(x = coluna, y = valor, fill = Experimento)) +
   geom_col(position = "dodge") +
   facet_grid(. ~ Experimento) +
